@@ -22,7 +22,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
     private final List<MovieDB> mMoviesList;
     private TextView listItemMovieTitle;
     private ImageView listItemMoviePoster;
-
+    
 
     public MoviesAdapter (List<MovieDB> moviesList) {
         mMoviesList = moviesList;

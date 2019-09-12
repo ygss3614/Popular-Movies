@@ -2,6 +2,8 @@ package com.example.android.popularmoviesapp.utilities;
 
 import android.net.Uri;
 
+import com.example.android.popularmoviesapp.BuildConfig;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -11,18 +13,18 @@ import java.util.Scanner;
 
 @SuppressWarnings("SpellCheckingInspection")
 public class NetworkUtils {
-
+    private final static String API_KEY = "api_key";
+    private static final String YOUR_API_KEY = BuildConfig.API_KEY;
     private final static String THE_MOVIE_DB_POPULAR_BASE_URL =
             "https://api.themoviedb.org/3/movie/popular";
     private final static String THE_MOVIE_DB_HIGHEST_RATED_URL =
-            "https://api.themoviedb.org/3/discover/movie";
+            "https://api.themoviedb.org/3/movie/top_rated";
     private final static String THE_MOVIE_DB_IMAGE_BASE_URL =
             "https://image.tmdb.org/t/p/";
     private final static String SORT_BY = "sort_by";
     private final static String SORT_BY_PARAM = "vote_average.desc";
-    private final static String API_KEY = "api_key";
     @SuppressWarnings("SpellCheckingInspection")
-    private final static String YOUR_API_KEY = "<your_key>";
+
 
     public static URL buildPopularMoviesUrl() {
         Uri builtUri  = Uri.parse(THE_MOVIE_DB_POPULAR_BASE_URL).buildUpon()

@@ -49,14 +49,21 @@ public class JsonUtils {
             URL movieThumbnailUrl = NetworkUtils.buildPopularMovieImageUrl(moviePosterPath, THUMBNAIL_SIZE);
             String movieThumbnailUrlString = movieThumbnailUrl.toString();
             String movieVoteAverage = movieObject.getString(KEY_VOTE_AVERAGE);
-            String movieReleaseDate = movieObject.getString(KEY_RELEASE_DATE).replace("-", "");
-            String humanMovieReleaseDate = LocalDate.parse(
-                    movieReleaseDate,
-                    DateTimeFormatter.BASIC_ISO_DATE
-            ).format(
-                    DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
-                            .withLocale(Locale.US)
-            );
+            String humanMovieReleaseDate = "";
+
+            if (movieObject.getString(KEY_RELEASE_DATE) != null && movieObject.getString(KEY_RELEASE_DATE) == "") {
+                String movieReleaseDate = movieObject.getString(KEY_RELEASE_DATE).replace("-", "");
+
+                humanMovieReleaseDate = LocalDate.parse(
+                        movieReleaseDate,
+                        DateTimeFormatter.BASIC_ISO_DATE
+                ).format(
+                        DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
+                                .withLocale(Locale.US)
+                );
+
+
+            }
 
 
             MovieDB movieDB = new MovieDB(movieTitle, movieOriginalTitle, movieOverview,
