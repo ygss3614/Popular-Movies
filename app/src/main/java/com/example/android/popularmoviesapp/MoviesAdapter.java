@@ -19,13 +19,20 @@ import java.util.List;
 
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewHolder>{
 
+
+    public interface OnItemClickListener {
+        void onItemClick(MovieDB movieDB);
+    }
+
     private final List<MovieDB> mMoviesList;
+    private final OnItemClickListener listener;
     private TextView listItemMovieTitle;
     private ImageView listItemMoviePoster;
-    
 
-    public MoviesAdapter (List<MovieDB> moviesList) {
+
+    public MoviesAdapter (List<MovieDB> moviesList, OnItemClickListener listenerOnItemClickListener) {
         mMoviesList = moviesList;
+        listener = listenerOnItemClickListener;
 
     }
     @NonNull
@@ -42,7 +49,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
 
     @Override
     public void onBindViewHolder(@NonNull MovieViewHolder movieViewHolder, int i) {
-        movieViewHolder.bind(i);
+        movieViewHolder.bind(mMoviesList.get(i), listener);
     }
 
 
@@ -52,38 +59,30 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
     }
 
 
-    class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class MovieViewHolder extends RecyclerView.ViewHolder {
 
         MovieViewHolder(View itemView){
             super(itemView);
             listItemMovieTitle = itemView.findViewById(R.id.tv_movie_title);
             listItemMoviePoster =  itemView.findViewById(R.id.iv_movie_poster);
-            itemView.setOnClickListener(this);
         }
 
-        void bind(int position){
+        void bind(final MovieDB movieDB, final OnItemClickListener listener){
 
             Picasso.get()
-                    .load(mMoviesList.get(position).getPosterPath())
+                    .load(movieDB.getPosterPath())
                     .error(R.mipmap.ic_launcher)
                     .into(listItemMoviePoster);
 
-            listItemMovieTitle.setText(mMoviesList.get(position).getTitle());
-        }
-
-        @Override
-        public void onClick(View view) {
-            int clickedPosition = getAdapterPosition();
-            Context context = view.getContext();
-            MovieDB movieDB = mMoviesList.get(clickedPosition);
-            if (movieDB != null){
-                Intent intent = new Intent(context, MoviesDetails.class);
-                intent.putExtra(MoviesDetails.EXTRA_MOVIE, movieDB );
-                context.startActivity(intent);
-            } else {
-                Toast.makeText(context, "movieDB object is null", Toast.LENGTH_LONG).show();
-            }
+            listItemMovieTitle.setText(movieDB.getTitle());
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    listener.onItemClick(movieDB);
+                }
+            });
 
         }
+
     }
 }

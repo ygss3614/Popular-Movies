@@ -1,5 +1,7 @@
 package com.example.android.popularmoviesapp;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -9,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.net.URL;
@@ -83,7 +86,19 @@ public class MainActivity extends AppCompatActivity {
                     GridLayoutManager layoutManager = new GridLayoutManager(MainActivity.this, 3);
                     mMoviesList.setLayoutManager(layoutManager);
                     List<MovieDB> movieDBList = JsonUtils.parseMovieDBJson(searchResult);
-                    MoviesAdapter mAdapter = new MoviesAdapter(movieDBList);
+                    MoviesAdapter mAdapter = new MoviesAdapter(movieDBList, new MoviesAdapter.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(MovieDB movieDB) {
+                            Context context = MainActivity.this;
+                            if (movieDB != null){
+                                Intent intent = new Intent(context, MoviesDetails.class);
+                                intent.putExtra(MoviesDetails.EXTRA_MOVIE, movieDB );
+                                context.startActivity(intent);
+                            } else {
+                                Toast.makeText(context, "movieDB object is null", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
                     mMoviesList.setAdapter(mAdapter);
 
                 } catch (JSONException e){
