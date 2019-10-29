@@ -26,7 +26,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
 
     private final List<MovieDB> mMoviesList;
     private final OnItemClickListener listener;
-    private TextView listItemMovieTitle;
     private ImageView listItemMoviePoster;
 
 
@@ -63,7 +62,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
 
         MovieViewHolder(View itemView){
             super(itemView);
-            listItemMovieTitle = itemView.findViewById(R.id.tv_movie_title);
             listItemMoviePoster =  itemView.findViewById(R.id.iv_movie_poster);
         }
 
@@ -74,7 +72,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
                     .error(R.mipmap.ic_launcher)
                     .into(listItemMoviePoster);
 
-            listItemMovieTitle.setText(movieDB.getTitle());
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

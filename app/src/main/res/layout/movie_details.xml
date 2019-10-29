@@ -56,7 +56,7 @@
                             android:textSize="14sp"
                             android:textColor="#FFFFFF"
                             android:fontFamily="sans-serif"
-                            android:text="@string/release_label"/>
+                            android:text="@string/movie_release_label"/>
                         <TextView
                             android:id="@+id/release_tv"
                             android:layout_width="wrap_content"
@@ -83,7 +83,7 @@
                             android:textSize="14sp"
                             android:textColor="#FFFFFF"
                             android:fontFamily="sans-serif"
-                            android:text="@string/vote_average_label"/>
+                            android:text="@string/movie_vote_average_label"/>
                         <TextView
                             android:id="@+id/vote_average_tv"
                             android:layout_width="wrap_content"
@@ -109,6 +109,45 @@
                 android:textSize="14sp"
                 android:textColor="#FFFFFF"
                 android:fontFamily="sans-serif"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:paddingTop="15dp"
+                android:textSize="14sp"
+                android:textColor="#FFFFFF"
+                android:fontFamily="sans-serif"
+                android:text="@string/movie_videos_label"/>
+
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_movie_video_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:paddingTop="15dp"
+                android:textSize="14sp"
+                android:textColor="#FFFFFF"
+                android:fontFamily="sans-serif"
+                android:text="@string/movie_reviews_label"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_movie_review_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"/>
+
         </LinearLayout>
+
     </ScrollView>
 </LinearLayout>
