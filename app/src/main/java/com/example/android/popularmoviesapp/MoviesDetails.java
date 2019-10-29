@@ -51,8 +51,6 @@ public class MoviesDetails extends AppCompatActivity {
         mReleaseDateTextView = findViewById(R.id.release_tv);
         mVoteAverageTextView = findViewById(R.id.vote_average_tv);
         mThumbnailImageView = findViewById(R.id.thumbnail_iv);
-        mMovieReviewTextView = findViewById(R.id.movie_review_content_tv);
-
 
         Intent intent = getIntent();
 
@@ -76,41 +74,47 @@ public class MoviesDetails extends AppCompatActivity {
         finish();
     }
 
-    private void fetchMovieReviews (int movieDB){
-        URL movieReviewsURL = NetworkUtils.builPopularMovieReviews(movieDB);
+
+    public void initializeMovieReviewObject(String searchResultReview){
+        try {
+            RecyclerView mMovieReviewsList = findViewById(R.id.rv_movie_review_list);
+            GridLayoutManager layoutManager = new GridLayoutManager(MoviesDetails.this, 1);
+            mMovieReviewsList.setLayoutManager(layoutManager);
+            final List<MovieReviews> reviews =  JsonUtils.parseMovieReviewsJson(searchResultReview);
+
+            MovieReviewsAdapter mAdapter = new MovieReviewsAdapter(reviews);
+            mMovieReviewsList.setAdapter(mAdapter);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void fetchMovieReviews (int movieID){
+        URL movieReviewsURL = NetworkUtils.builPopularMovieReviews(movieID);
         new MyQueryTask(new MyQueryTask.AsyncResponse(){
 
             @Override
             public void processFinish(String output){
-                updateMovieReviews(output);
+                initializeMovieReviewObject(output);
             }
         }).execute(movieReviewsURL);
 
     }
 
-    private void fetchMovieVideos(int movieDB){
-        URL movieVideosURL = NetworkUtils.builPopularMovieVideos(movieDB);
-        new MyQueryTask(new MyQueryTask.AsyncResponse(){
+    public void playVideo(String videoKey){
+        Toast.makeText(MoviesDetails.this, "play button pressed", Toast.LENGTH_LONG).show();
+        String youtube_base = "http://www.youtube.com/watch?v=%s";
+        Uri videoUri = Uri.parse(String.format(youtube_base, videoKey));
 
-            @Override
-            public void processFinish(String output){
-                initializeMovieObject(output);
-            }
-        }).execute(movieVideosURL);
+        Intent intentMovieVideo = new Intent(Intent.ACTION_VIEW);
+        intentMovieVideo.setData(videoUri);
 
-    }
-
-    private void updateMovieReviews(String stringReviews){
-        try {
-            List<MovieReviews> reviews =  JsonUtils.parseMovieReviewsJson(stringReviews);
-            for (int i = 0; i < reviews.size(); i ++) {
-                mMovieReviewTextView.append(reviews.get(i).getContent() + "\n");
-            }
-
-        } catch (JSONException e){
-            e.printStackTrace();
+        if (intentMovieVideo.resolveActivity(getPackageManager()) != null) {
+            startActivity(intentMovieVideo);
+        }else{
+            startActivity(intentMovieVideo);
         }
-
     }
 
     public void initializeMovieObject(String searchResultVideos){
@@ -119,7 +123,6 @@ public class MoviesDetails extends AppCompatActivity {
             GridLayoutManager layoutManager = new GridLayoutManager(MoviesDetails.this, 1);
             mMovieVideoList.setLayoutManager(layoutManager);
             final List<MovieVideos> videos =  JsonUtils.parseMovieVideosJson(searchResultVideos);
-            Toast.makeText(MoviesDetails.this, "test 1", Toast.LENGTH_LONG).show();
             MovieVideosAdapter mAdapter = new MovieVideosAdapter(videos, new MovieVideosAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClick(MovieVideos movieVideos) {
@@ -137,21 +140,18 @@ public class MoviesDetails extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-    public void playVideo(String videoKey){
-        Toast.makeText(MoviesDetails.this, "play button pressed", Toast.LENGTH_LONG).show();
-        String youtube_base = "http://www.youtube.com/watch?v=%s";
-        Uri videoUri = Uri.parse(String.format(youtube_base, videoKey));
 
-        Intent intentMovieVideo = new Intent(Intent.ACTION_VIEW);
-        intentMovieVideo.setData(videoUri);
+    private void fetchMovieVideos(int movieId){
+        URL movieVideosURL = NetworkUtils.builPopularMovieVideos(movieId);
+        new MyQueryTask(new MyQueryTask.AsyncResponse(){
 
-        if (intentMovieVideo.resolveActivity(getPackageManager()) != null) {
-            startActivity(intentMovieVideo);
-        }else{
-            startActivity(intentMovieVideo);
-        }
+            @Override
+            public void processFinish(String output){
+                initializeMovieObject(output);
+            }
+        }).execute(movieVideosURL);
+
     }
-
 
     private void populateUI(MovieDB movieDBObject){
         mOriginalTitleTextView.setText(movieDBObject.getOriginalTitle());
