@@ -10,9 +10,21 @@
     <!-- Movie Details -->
     <string name="movie_release_label">Released on: </string>
     <string name="movie_vote_average_label">User Rating: </string>
-    <string name="movie_videos_label">Trailers</string>
-    <string name="movie_reviews_label">Reviews</string>
+    <string name="movie_videos_label">Trailers:</string>
+    <string name="movie_reviews_label">Reviews:</string>
     <string name="videos_play">Play</string>
+    <string name="movie_detail_description">Movie Details</string>
+
+    <!--Movie Details Mockup-->
+    <string name="mockup_movie_title">Title</string>
+    <string name="mockup_movie_release">11/10/2016</string>
+    <string name="mockup_movie_rate">10</string>
+    <string name="mockup_movie_overview">blah blah blah blah blah</string>
+    <string name="mockup_movie_review">blah blah blah blah bl</string>
+    <string name="mockup_movie_review_author">author</string>
+    <string name="mockup_movie_play_trailer">author</string>
+    <string name="mockup_movie_trailer">Trailer 1</string>
+    <string name="mockup_movie_add_favorite">Add to Favorite</string>
 
 
 </resources>

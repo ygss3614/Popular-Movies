@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +17,7 @@ import android.widget.Toast;
 import com.example.android.popularmoviesapp.model.MovieDB;
 import com.example.android.popularmoviesapp.utilities.JsonUtils;
 import com.example.android.popularmoviesapp.utilities.MyQueryTask;
+import com.example.android.popularmoviesapp.utilities.MyAsyncTaskLoader;
 import com.example.android.popularmoviesapp.utilities.NetworkUtils;
 
 import org.json.JSONException;
@@ -30,16 +33,21 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         URL popularMoviesURL = NetworkUtils.buildPopularMoviesUrl();
-        new MyQueryTask(new MyQueryTask.AsyncResponse(){
-
-            @Override
-            public void processFinish(String output){
-                initializeMovieObject(output);
-            }
-        }).execute(popularMoviesURL);
-
+        makeMovieDbSearch(popularMoviesURL);
     }
 
+    public void makeMovieDbSearch(URL popularMoviesURL){
+        LoaderManager loaderManager = getSupportLoaderManager();
+        new MyAsyncTaskLoader(
+                new MyAsyncTaskLoader.AsyncResponse(){
+                    @Override
+                    public void processFinish(String output){
+                        initializeMovieObject(output);
+                    }
+                }, this
+            ).startAsyncTaskLoader(popularMoviesURL, loaderManager, MyAsyncTaskLoader.MOVIEDB_SEARCH_LOADER);
+
+    }
 
     public void initializeMovieObject(String searchResult){
         try {
@@ -78,27 +86,13 @@ public class MainActivity extends AppCompatActivity {
         int menuItemThatWasSelected = item.getItemId();
         if( menuItemThatWasSelected == R.id.action_most_popular ){
             URL popularMoviesURL = NetworkUtils.buildPopularMoviesUrl();
-            new MyQueryTask(new MyQueryTask.AsyncResponse(){
-
-                @Override
-                public void processFinish(String output){
-                    initializeMovieObject(output);
-                }
-            }).execute(popularMoviesURL);
-
+            makeMovieDbSearch(popularMoviesURL);
             return true;
         }
 
         if( menuItemThatWasSelected == R.id.action_highest_rated ){
             URL highestRatedURL = NetworkUtils.buildPopularMovieHighestRated();
-            new MyQueryTask(new MyQueryTask.AsyncResponse(){
-
-                @Override
-                public void processFinish(String output){
-                    initializeMovieObject(output);
-                }
-            }).execute(highestRatedURL);
-
+            makeMovieDbSearch(highestRatedURL);
             return true;
         }
         return super.onOptionsItemSelected(item);

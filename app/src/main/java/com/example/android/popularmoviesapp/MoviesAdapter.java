@@ -27,6 +27,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
     private final List<MovieDB> mMoviesList;
     private final OnItemClickListener listener;
     private ImageView listItemMoviePoster;
+    private TextView listItemMovieTitle;
 
 
     public MoviesAdapter (List<MovieDB> moviesList, OnItemClickListener listenerOnItemClickListener) {
@@ -63,10 +64,11 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
         MovieViewHolder(View itemView){
             super(itemView);
             listItemMoviePoster =  itemView.findViewById(R.id.iv_movie_poster);
+            listItemMovieTitle = itemView.findViewById(R.id.tv_movie_title);
         }
 
         void bind(final MovieDB movieDB, final OnItemClickListener listener){
-
+            listItemMovieTitle.setText(movieDB.getTitle());
             Picasso.get()
                     .load(movieDB.getPosterPath())
                     .error(R.mipmap.ic_launcher)

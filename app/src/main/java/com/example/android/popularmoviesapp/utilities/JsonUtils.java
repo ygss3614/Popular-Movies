@@ -34,7 +34,7 @@ public class JsonUtils {
     private static final String KEY_VOTE_AVERAGE = "vote_average";
     private static final String KEY_RELEASE_DATE = "release_date";
     private static final String POSTER_SIZE = "w780/";
-    private static final String THUMBNAIL_SIZE = "w154/";
+    private static final String THUMBNAIL_SIZE = "w342/";
 
 
     public static List<MovieReviews> parseMovieReviewsJson (String stringReviews) throws JSONException {
@@ -93,7 +93,7 @@ public class JsonUtils {
             String movieVoteAverage = movieObject.getString(KEY_VOTE_AVERAGE);
             String humanMovieReleaseDate = "";
 
-            if (movieObject.getString(KEY_RELEASE_DATE) != null && movieObject.getString(KEY_RELEASE_DATE) == "") {
+            if (movieObject.getString(KEY_RELEASE_DATE) != null && movieObject.getString(KEY_RELEASE_DATE) != "") {
                 String movieReleaseDate = movieObject.getString(KEY_RELEASE_DATE).replace("-", "");
 
                 humanMovieReleaseDate = LocalDate.parse(

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,6 +18,7 @@ import com.example.android.popularmoviesapp.model.MovieDB;
 import com.example.android.popularmoviesapp.model.MovieReviews;
 import com.example.android.popularmoviesapp.model.MovieVideos;
 import com.example.android.popularmoviesapp.utilities.JsonUtils;
+import com.example.android.popularmoviesapp.utilities.MyAsyncTaskLoader;
 import com.example.android.popularmoviesapp.utilities.MyQueryTask;
 import com.example.android.popularmoviesapp.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
@@ -36,21 +38,18 @@ public class MoviesDetails extends AppCompatActivity {
     private TextView mOverviewTextView;
     private TextView mReleaseDateTextView;
     private TextView mVoteAverageTextView;
-    private TextView mMovieReviewTextView;
     private ImageView mThumbnailImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.movie_details);
-        LinearLayout ll = findViewById(R.id.movie_details_linear_layout);
-        ll.setBackgroundColor(Color.DKGRAY);
-
         mOriginalTitleTextView = findViewById(R.id.original_title_tv);
         mOverviewTextView = findViewById(R.id.overview_tv);
         mReleaseDateTextView = findViewById(R.id.release_tv);
         mVoteAverageTextView = findViewById(R.id.vote_average_tv);
         mThumbnailImageView = findViewById(R.id.thumbnail_iv);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Intent intent = getIntent();
 
@@ -75,6 +74,7 @@ public class MoviesDetails extends AppCompatActivity {
     }
 
 
+
     public void initializeMovieReviewObject(String searchResultReview){
         try {
             RecyclerView mMovieReviewsList = findViewById(R.id.rv_movie_review_list);
@@ -90,20 +90,21 @@ public class MoviesDetails extends AppCompatActivity {
         }
     }
 
-    private void fetchMovieReviews (int movieID){
+    public void fetchMovieReviews(int movieID){
         URL movieReviewsURL = NetworkUtils.builPopularMovieReviews(movieID);
-        new MyQueryTask(new MyQueryTask.AsyncResponse(){
-
-            @Override
-            public void processFinish(String output){
-                initializeMovieReviewObject(output);
-            }
-        }).execute(movieReviewsURL);
+        LoaderManager loaderManager = getSupportLoaderManager();
+        new MyAsyncTaskLoader(
+                new MyAsyncTaskLoader.AsyncResponse(){
+                    @Override
+                    public void processFinish(String output){
+                        initializeMovieReviewObject(output);
+                    }
+                }, this
+        ).startAsyncTaskLoader(movieReviewsURL, loaderManager, MyAsyncTaskLoader.MOVIE_REVIEWS_LOADER);
 
     }
 
     public void playVideo(String videoKey){
-        Toast.makeText(MoviesDetails.this, "play button pressed", Toast.LENGTH_LONG).show();
         String youtube_base = "http://www.youtube.com/watch?v=%s";
         Uri videoUri = Uri.parse(String.format(youtube_base, videoKey));
 
@@ -141,16 +142,19 @@ public class MoviesDetails extends AppCompatActivity {
         }
     }
 
-    private void fetchMovieVideos(int movieId){
+
+
+    public void fetchMovieVideos(int movieId){
         URL movieVideosURL = NetworkUtils.builPopularMovieVideos(movieId);
-        new MyQueryTask(new MyQueryTask.AsyncResponse(){
-
-            @Override
-            public void processFinish(String output){
-                initializeMovieObject(output);
-            }
-        }).execute(movieVideosURL);
-
+        LoaderManager loaderManager = getSupportLoaderManager();
+        new MyAsyncTaskLoader(
+                new MyAsyncTaskLoader.AsyncResponse(){
+                    @Override
+                    public void processFinish(String output){
+                        initializeMovieObject(output);
+                    }
+                }, this
+        ).startAsyncTaskLoader(movieVideosURL, loaderManager, MyAsyncTaskLoader.MOVIE_VIDEOS_LOADER);
     }
 
     private void populateUI(MovieDB movieDBObject){
@@ -164,8 +168,9 @@ public class MoviesDetails extends AppCompatActivity {
                 .error(R.mipmap.ic_launcher)
                 .into(mThumbnailImageView);
 
-        fetchMovieReviews(movieDBObject.getId());
+
         fetchMovieVideos(movieDBObject.getId());
+        fetchMovieReviews(movieDBObject.getId());
 
 
     }
