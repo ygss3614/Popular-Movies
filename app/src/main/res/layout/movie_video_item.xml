@@ -23,7 +23,6 @@
         android:layout_marginTop="16dp"
         android:background="@android:drawable/presence_video_online"
         android:contentDescription="@string/mockup_movie_play_trailer"
-        android:text="@string/videos_play"
         android:textAlignment="center"
         android:textSize="12sp"
         app:layout_constraintStart_toStartOf="parent"

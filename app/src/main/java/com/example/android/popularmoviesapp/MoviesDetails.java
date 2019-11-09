@@ -2,24 +2,25 @@ package com.example.android.popularmoviesapp;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.popularmoviesapp.model.AppDatabase;
 import com.example.android.popularmoviesapp.model.MovieDB;
 import com.example.android.popularmoviesapp.model.MovieReviews;
 import com.example.android.popularmoviesapp.model.MovieVideos;
 import com.example.android.popularmoviesapp.utilities.JsonUtils;
 import com.example.android.popularmoviesapp.utilities.MyAsyncTaskLoader;
-import com.example.android.popularmoviesapp.utilities.MyQueryTask;
 import com.example.android.popularmoviesapp.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
@@ -39,48 +40,66 @@ public class MoviesDetails extends AppCompatActivity {
     private TextView mReleaseDateTextView;
     private TextView mVoteAverageTextView;
     private ImageView mThumbnailImageView;
+    private Button mFavoriteMovieButton;
+
+    private AppDatabase mDb;
+    private MovieDB currentMovie;
+    private static final String LOG_TAG = AppDatabase.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.movie_details);
-        mOriginalTitleTextView = findViewById(R.id.original_title_tv);
-        mOverviewTextView = findViewById(R.id.overview_tv);
-        mReleaseDateTextView = findViewById(R.id.release_tv);
-        mVoteAverageTextView = findViewById(R.id.vote_average_tv);
-        mThumbnailImageView = findViewById(R.id.thumbnail_iv);
+
+        initViews();
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Intent intent = getIntent();
 
-        if(intent == null){
+        if (intent == null) {
             closeOnError();
         }
 
-        MovieDB movieDB = Objects.requireNonNull(intent).getParcelableExtra(EXTRA_MOVIE);
+        currentMovie = Objects.requireNonNull(intent).getParcelableExtra(EXTRA_MOVIE);
 
-        if (movieDB == DEFAULT_MOVIE) {
+        if (currentMovie == DEFAULT_MOVIE) {
             // EXTRA_POSITION not found in intent
             closeOnError();
             return;
         }
 
+        mDb = AppDatabase.getInstance(getApplicationContext());
 
-        populateUI(movieDB);
+        populateUI(currentMovie);
     }
 
-    private void closeOnError(){
+    private void initViews() {
+        mOriginalTitleTextView = findViewById(R.id.original_title_tv);
+        mOverviewTextView = findViewById(R.id.overview_tv);
+        mReleaseDateTextView = findViewById(R.id.release_tv);
+        mVoteAverageTextView = findViewById(R.id.vote_average_tv);
+        mThumbnailImageView = findViewById(R.id.thumbnail_iv);
+        mFavoriteMovieButton = findViewById(R.id.favorite_bt);
+        mFavoriteMovieButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onAddFavoriteButtonClicked();
+            }
+        });
+    }
+
+    private void closeOnError() {
         finish();
     }
 
 
-
-    public void initializeMovieReviewObject(String searchResultReview){
+    public void initializeMovieReviewObject(String searchResultReview) {
         try {
             RecyclerView mMovieReviewsList = findViewById(R.id.rv_movie_review_list);
             GridLayoutManager layoutManager = new GridLayoutManager(MoviesDetails.this, 1);
             mMovieReviewsList.setLayoutManager(layoutManager);
-            final List<MovieReviews> reviews =  JsonUtils.parseMovieReviewsJson(searchResultReview);
+            final List<MovieReviews> reviews = JsonUtils.parseMovieReviewsJson(searchResultReview);
 
             MovieReviewsAdapter mAdapter = new MovieReviewsAdapter(reviews);
             mMovieReviewsList.setAdapter(mAdapter);
@@ -90,13 +109,13 @@ public class MoviesDetails extends AppCompatActivity {
         }
     }
 
-    public void fetchMovieReviews(int movieID){
+    public void fetchMovieReviews(int movieID) {
         URL movieReviewsURL = NetworkUtils.builPopularMovieReviews(movieID);
         LoaderManager loaderManager = getSupportLoaderManager();
         new MyAsyncTaskLoader(
-                new MyAsyncTaskLoader.AsyncResponse(){
+                new MyAsyncTaskLoader.AsyncResponse() {
                     @Override
-                    public void processFinish(String output){
+                    public void processFinish(String output) {
                         initializeMovieReviewObject(output);
                     }
                 }, this
@@ -104,7 +123,7 @@ public class MoviesDetails extends AppCompatActivity {
 
     }
 
-    public void playVideo(String videoKey){
+    public void playVideo(String videoKey) {
         String youtube_base = "http://www.youtube.com/watch?v=%s";
         Uri videoUri = Uri.parse(String.format(youtube_base, videoKey));
 
@@ -113,17 +132,17 @@ public class MoviesDetails extends AppCompatActivity {
 
         if (intentMovieVideo.resolveActivity(getPackageManager()) != null) {
             startActivity(intentMovieVideo);
-        }else{
+        } else {
             startActivity(intentMovieVideo);
         }
     }
 
-    public void initializeMovieObject(String searchResultVideos){
+    public void initializeMovieObject(String searchResultVideos) {
         try {
             RecyclerView mMovieVideoList = findViewById(R.id.rv_movie_video_list);
             GridLayoutManager layoutManager = new GridLayoutManager(MoviesDetails.this, 1);
             mMovieVideoList.setLayoutManager(layoutManager);
-            final List<MovieVideos> videos =  JsonUtils.parseMovieVideosJson(searchResultVideos);
+            final List<MovieVideos> videos = JsonUtils.parseMovieVideosJson(searchResultVideos);
             MovieVideosAdapter mAdapter = new MovieVideosAdapter(videos, new MovieVideosAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClick(MovieVideos movieVideos) {
@@ -143,21 +162,20 @@ public class MoviesDetails extends AppCompatActivity {
     }
 
 
-
-    public void fetchMovieVideos(int movieId){
+    public void fetchMovieVideos(int movieId) {
         URL movieVideosURL = NetworkUtils.builPopularMovieVideos(movieId);
         LoaderManager loaderManager = getSupportLoaderManager();
         new MyAsyncTaskLoader(
-                new MyAsyncTaskLoader.AsyncResponse(){
+                new MyAsyncTaskLoader.AsyncResponse() {
                     @Override
-                    public void processFinish(String output){
+                    public void processFinish(String output) {
                         initializeMovieObject(output);
                     }
                 }, this
         ).startAsyncTaskLoader(movieVideosURL, loaderManager, MyAsyncTaskLoader.MOVIE_VIDEOS_LOADER);
     }
 
-    private void populateUI(MovieDB movieDBObject){
+    private void populateUI(MovieDB movieDBObject) {
         mOriginalTitleTextView.setText(movieDBObject.getOriginalTitle());
         mOverviewTextView.setText(movieDBObject.getOverview());
         mReleaseDateTextView.setText(movieDBObject.getReleaseDate());
@@ -174,5 +192,23 @@ public class MoviesDetails extends AppCompatActivity {
 
 
     }
+
+    // onAddFavoriteButtonClicked is called when "favorite" button is clicked
+    public void onAddFavoriteButtonClicked() {
+        MovieDB favoriteMovie;
+        MovieDB savedMovie = mDb.movieDao().getMovieById(currentMovie.getId());
+        if (savedMovie != null) {
+            mDb.movieDao().deleteMovie(savedMovie);
+            mFavoriteMovieButton.setBackgroundResource(android.R.drawable.btn_star_big_off);
+        }
+        else {
+            favoriteMovie = new MovieDB(currentMovie.getId(), currentMovie.getTitle());
+            mDb.movieDao().insertMovie(favoriteMovie);
+            mFavoriteMovieButton.setBackgroundResource(android.R.drawable.btn_star_big_on);
+        }
+
+    }
+
+
 
 }

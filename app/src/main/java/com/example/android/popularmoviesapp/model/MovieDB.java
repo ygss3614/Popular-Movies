@@ -1,21 +1,39 @@
 package com.example.android.popularmoviesapp.model;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.List;
 
+@Entity(tableName = "favorite")
 public class MovieDB implements Parcelable{
-    private String title, posterPath, size, originalTitle, overview, voteAverage,
-            releaseDate, thumbnailPosterPath;
+    @PrimaryKey
+    private int id;
+    public String title;
 
+    @Ignore
+    private String posterPath;
+    @Ignore
+    private String size;
+    @Ignore
+    private String originalTitle;
+    @Ignore
+    private String overview;
+    @Ignore
+    private String voteAverage;
+    @Ignore
+    private String releaseDate;
+    @Ignore
+    private String thumbnailPosterPath;
+    @Ignore
     private List<MovieReviews> reviews;
 
-    private int id;
-
-
+    @Ignore
     public  MovieDB (){}
-
+    @Ignore
     public MovieDB(int id, String title, String originalTitle, String overview, String posterPath,
                    String thumbnailPoster, String voteAverage, String releaseDate){
         this.id = id;
@@ -28,6 +46,10 @@ public class MovieDB implements Parcelable{
         this.releaseDate = releaseDate;
         this.thumbnailPosterPath = thumbnailPoster;
 
+    }
+    public MovieDB(int id, String title){
+        this.id = id;
+        this.title = title;
     }
 
     private MovieDB(Parcel in) {
@@ -71,6 +93,10 @@ public class MovieDB implements Parcelable{
         parcel.writeString(voteAverage);
         parcel.writeString(releaseDate);
         parcel.writeString(thumbnailPosterPath);
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getId () { return this.id; }

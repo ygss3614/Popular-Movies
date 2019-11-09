@@ -3,6 +3,7 @@
     <string name="app_name">Popular Movies App</string>
     <string name="order_by_most_popular">Most Popular</string>
     <string name="order_by_highest_rated">Highest Rated</string>
+    <string name="order_by_favorite_movies">Favorite Movies</string>
     <string name="movie_poster">Movie Poster</string>
     <string name="movie_video">Movie Video</string>
     <string name="movie_poster_thumbnail">Movie Poster Thumbnail</string>

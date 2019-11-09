@@ -11,4 +11,9 @@
         android:orderInCategory="1"
         android:id="@+id/action_highest_rated"/>
 
+    <item
+        android:title="@string/order_by_favorite_movies"
+        android:orderInCategory="1"
+        android:id="@+id/action_favorite_movies"/>
+
 </menu>
