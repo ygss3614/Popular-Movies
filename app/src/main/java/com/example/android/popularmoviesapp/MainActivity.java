@@ -28,17 +28,50 @@ import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
+
     private AppDatabase mDb;
+    private static final String SEARCH_URL_KEY = "search_url";
+    private int menuItemThatWasSelected;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         // TODO salvar a query que esta sendo utilizada pra não retornar para a url principal
-        URL popularMoviesURL = NetworkUtils.buildPopularMoviesUrl();
-        makeMovieDbSearch(popularMoviesURL);
+
         mDb = AppDatabase.getInstance(getApplicationContext());
-        Log.d("STEP", "ON CREATE");
+
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(SEARCH_URL_KEY)) {
+                Integer queryCallback = savedInstanceState
+                        .getInt(SEARCH_URL_KEY);
+                if( queryCallback == R.id.action_most_popular ){
+                    URL popularMoviesURL = NetworkUtils.buildPopularMoviesUrl();
+                    makeMovieDbSearch(popularMoviesURL);
+                }
+
+                if( queryCallback == R.id.action_highest_rated ) {
+                    URL highestRatedURL = NetworkUtils.buildPopularMovieHighestRated();
+                    makeMovieDbSearch(highestRatedURL);
+                }
+
+                if (queryCallback == R.id.action_favorite_movies) {
+                    final LiveData<List<MovieDB>> favoriteMovies = mDb.movieDao().loadFavoriteMovies();
+                    favoriteMovies.observe(this, new Observer<List<MovieDB>>() {
+                        @Override
+                        public void onChanged(@Nullable List<MovieDB> movieDBS) {
+                            favoriteMovies.removeObserver(this);
+                            initializeMovieObject(movieDBS);
+                        }
+                    });
+                }
+            }
+        }else{
+            URL popularMoviesURL = NetworkUtils.buildPopularMoviesUrl();
+            makeMovieDbSearch(popularMoviesURL);
+        }
+
     }
 
     public void makeMovieDbSearch(URL popularMoviesURL){
@@ -89,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int menuItemThatWasSelected = item.getItemId();
+        menuItemThatWasSelected = item.getItemId();
         if( menuItemThatWasSelected == R.id.action_most_popular ){
             URL popularMoviesURL = NetworkUtils.buildPopularMoviesUrl();
             makeMovieDbSearch(popularMoviesURL);
@@ -115,6 +148,14 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+
+        super.onSaveInstanceState(outState);
+        Log.d("OnSavedInstanceMethod", "OnSavedInstanceMethod");
+        outState.putInt(SEARCH_URL_KEY, menuItemThatWasSelected);
     }
 
 }
