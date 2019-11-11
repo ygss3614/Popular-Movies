@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,7 +69,9 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
         }
 
         void bind(final MovieDB movieDB, final OnItemClickListener listener){
+            Log.d("MAIN", movieDB.getTitle());
             listItemMovieTitle.setText(movieDB.getTitle());
+            Log.d("MAIN", movieDB.getPosterPath());
             Picasso.get()
                     .load(movieDB.getPosterPath())
                     .error(R.mipmap.ic_launcher)

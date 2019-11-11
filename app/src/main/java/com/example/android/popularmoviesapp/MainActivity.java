@@ -1,23 +1,23 @@
 package com.example.android.popularmoviesapp;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.example.android.popularmoviesapp.model.AppDatabase;
 import com.example.android.popularmoviesapp.model.MovieDB;
 import com.example.android.popularmoviesapp.utilities.JsonUtils;
-import com.example.android.popularmoviesapp.utilities.MyQueryTask;
 import com.example.android.popularmoviesapp.utilities.MyAsyncTaskLoader;
 import com.example.android.popularmoviesapp.utilities.NetworkUtils;
 
@@ -33,9 +33,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // TODO salvar a query que esta sendo utilizada pra não retornar para a url principal
         URL popularMoviesURL = NetworkUtils.buildPopularMoviesUrl();
         makeMovieDbSearch(popularMoviesURL);
         mDb = AppDatabase.getInstance(getApplicationContext());
+        Log.d("STEP", "ON CREATE");
     }
 
     public void makeMovieDbSearch(URL popularMoviesURL){
@@ -100,8 +103,15 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (menuItemThatWasSelected == R.id.action_favorite_movies) {
-            List<MovieDB> favoriteMovieList = mDb.movieDao().loadFavoriteMovies();
-            initializeMovieObject(favoriteMovieList);
+            final LiveData<List<MovieDB>> favoriteMovies = mDb.movieDao().loadFavoriteMovies();
+            favoriteMovies.observe(this, new Observer<List<MovieDB>>() {
+                @Override
+                public void onChanged(@Nullable List<MovieDB> movieDBS) {
+                    favoriteMovies.removeObserver(this);
+                    initializeMovieObject(movieDBS);
+                }
+            });
+
             return true;
         }
         return super.onOptionsItemSelected(item);

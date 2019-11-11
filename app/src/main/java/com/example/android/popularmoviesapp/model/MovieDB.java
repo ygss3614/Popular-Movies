@@ -14,19 +14,18 @@ public class MovieDB implements Parcelable{
     private int id;
     public String title;
 
-    @Ignore
     private String posterPath;
-    @Ignore
+
     private String size;
-    @Ignore
+
     private String originalTitle;
-    @Ignore
+
     private String overview;
-    @Ignore
+
     private String voteAverage;
-    @Ignore
+
     private String releaseDate;
-    @Ignore
+
     private String thumbnailPosterPath;
     @Ignore
     private List<MovieReviews> reviews;
@@ -105,22 +104,52 @@ public class MovieDB implements Parcelable{
         return this.title;
     }
 
+    public String getSize() { return size; }
+
+    public void setSize(String size) { this.size = size; }
+
+
+    public void setOriginalTitle(String originalTitle) {
+        this.originalTitle = originalTitle;
+    }
+
     public String getOriginalTitle() {
         return originalTitle;
+    }
+
+
+    public void setOverview(String overview) {
+        this.overview = overview;
     }
 
     public String getOverview() {
         return overview;
     }
 
+    public void setPosterPath(String posterPath) {
+        this.posterPath = posterPath;
+    }
+
     public String getPosterPath(){ return this.posterPath; }
+
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
+    }
 
     public String getReleaseDate() {
         return releaseDate;
     }
 
+    public void setVoteAverage(String voteAverage) {
+        this.voteAverage = voteAverage;
+    }
+
     public String getVoteAverage() {
         return voteAverage;
+    }
+
+    public void setThumbnailPosterPath(String thumbnailPosterPath) {
+        this.thumbnailPosterPath = thumbnailPosterPath;
     }
 
     public String getThumbnailPosterPath() {
