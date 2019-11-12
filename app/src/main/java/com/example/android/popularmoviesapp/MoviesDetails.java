@@ -42,6 +42,8 @@ public class MoviesDetails extends AppCompatActivity {
     private TextView mOverviewTextView;
     private TextView mReleaseDateTextView;
     private TextView mVoteAverageTextView;
+    private TextView mReviewsLabel;
+    private TextView mVideosLabel;
     private ImageView mThumbnailImageView;
     private Button mFavoriteMovieButton;
 
@@ -93,6 +95,8 @@ public class MoviesDetails extends AppCompatActivity {
         mVoteAverageTextView = findViewById(R.id.vote_average_tv);
         mThumbnailImageView = findViewById(R.id.thumbnail_iv);
         mFavoriteMovieButton = findViewById(R.id.favorite_bt);
+        mReviewsLabel = findViewById(R.id.reviews_label);
+        mVideosLabel = findViewById(R.id.videos_label_tv);
         mFavoriteMovieButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -128,7 +132,14 @@ public class MoviesDetails extends AppCompatActivity {
                 new MyAsyncTaskLoader.AsyncResponse() {
                     @Override
                     public void processFinish(String output) {
-                        initializeMovieReviewObject(output);
+                        if (output != null){
+                            initializeMovieReviewObject(output);
+                        } else {
+                            mFavoriteMovieButton.setVisibility(View.INVISIBLE);
+                            mVideosLabel.setVisibility(View.INVISIBLE);
+                            mReviewsLabel.setVisibility(View.INVISIBLE);
+                        }
+
                     }
                 }, this
         ).startAsyncTaskLoader(movieReviewsURL, loaderManager, MyAsyncTaskLoader.MOVIE_REVIEWS_LOADER);
@@ -183,7 +194,14 @@ public class MoviesDetails extends AppCompatActivity {
                 new MyAsyncTaskLoader.AsyncResponse() {
                     @Override
                     public void processFinish(String output) {
-                        initializeMovieObject(output);
+                        if (output != null){
+                            initializeMovieObject(output);
+                        } else {
+                            mFavoriteMovieButton.setVisibility(View.INVISIBLE);
+                            mVideosLabel.setVisibility(View.INVISIBLE);
+                            mReviewsLabel.setVisibility(View.INVISIBLE);
+
+                        }
                     }
                 }, this
         ).startAsyncTaskLoader(movieVideosURL, loaderManager, MyAsyncTaskLoader.MOVIE_VIDEOS_LOADER);

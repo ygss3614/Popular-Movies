@@ -69,9 +69,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
         }
 
         void bind(final MovieDB movieDB, final OnItemClickListener listener){
-            Log.d("MAIN", movieDB.getTitle());
             listItemMovieTitle.setText(movieDB.getTitle());
-            Log.d("MAIN", movieDB.getPosterPath());
             Picasso.get()
                     .load(movieDB.getPosterPath())
                     .error(R.mipmap.ic_launcher)

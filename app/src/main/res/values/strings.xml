@@ -7,6 +7,8 @@
     <string name="movie_poster">Movie Poster</string>
     <string name="movie_video">Movie Video</string>
     <string name="movie_poster_thumbnail">Movie Poster Thumbnail</string>
+    <string name="app_current_page">Current Page</string>
+
 
     <!-- Movie Details -->
     <string name="movie_release_label">Released on: </string>
