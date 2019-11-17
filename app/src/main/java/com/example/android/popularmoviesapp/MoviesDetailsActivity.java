@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Objects;
 
 
-public class MoviesDetails extends AppCompatActivity {
+public class MoviesDetailsActivity extends AppCompatActivity {
     public static final String EXTRA_MOVIE = "movie";
     private static final MovieDB DEFAULT_MOVIE = new MovieDB();
 
@@ -113,7 +113,7 @@ public class MoviesDetails extends AppCompatActivity {
     public void initializeMovieReviewObject(String searchResultReview) {
         try {
             RecyclerView mMovieReviewsList = findViewById(R.id.rv_movie_review_list);
-            GridLayoutManager layoutManager = new GridLayoutManager(MoviesDetails.this, 1);
+            GridLayoutManager layoutManager = new GridLayoutManager(MoviesDetailsActivity.this, 1);
             mMovieReviewsList.setLayoutManager(layoutManager);
             final List<MovieReviews> reviews = JsonUtils.parseMovieReviewsJson(searchResultReview);
 
@@ -163,14 +163,14 @@ public class MoviesDetails extends AppCompatActivity {
     public void initializeMovieObject(String searchResultVideos) {
         try {
             RecyclerView mMovieVideoList = findViewById(R.id.rv_movie_video_list);
-            GridLayoutManager layoutManager = new GridLayoutManager(MoviesDetails.this,
+            GridLayoutManager layoutManager = new GridLayoutManager(MoviesDetailsActivity.this,
                     1);
             mMovieVideoList.setLayoutManager(layoutManager);
             final List<MovieVideos> videos = JsonUtils.parseMovieVideosJson(searchResultVideos);
             MovieVideosAdapter mAdapter = new MovieVideosAdapter(videos, new MovieVideosAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClick(MovieVideos movieVideos) {
-                    Context context = MoviesDetails.this;
+                    Context context = MoviesDetailsActivity.this;
                     if (movieVideos != null) {
                         playVideo(movieVideos.getKey());
                     } else {

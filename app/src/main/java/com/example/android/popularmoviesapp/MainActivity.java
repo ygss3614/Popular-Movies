@@ -150,8 +150,8 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(MovieDB movieDB) {
                 Context context = MainActivity.this;
                 if (movieDB != null) {
-                    Intent intent = new Intent(context, MoviesDetails.class);
-                    intent.putExtra(MoviesDetails.EXTRA_MOVIE, movieDB);
+                    Intent intent = new Intent(context, MoviesDetailsActivity.class);
+                    intent.putExtra(MoviesDetailsActivity.EXTRA_MOVIE, movieDB);
                     context.startActivity(intent);
                 } else {
                     Toast.makeText(context, "movieDB object is null", Toast.LENGTH_LONG).show();
