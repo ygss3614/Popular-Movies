@@ -11,6 +11,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -55,54 +56,50 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState != null) {
 
-
-            if (savedInstanceState.containsKey(SEARCH_URL_KEY)) {
-                Integer queryCallback = savedInstanceState
-                        .getInt(SEARCH_URL_KEY);
-
-                if( queryCallback == R.id.action_most_popular ){
-                    actionSelected = R.id.action_most_popular;
-                    currentPageTitle.setText("Most Popular");
-                    URL popularMoviesURL = NetworkUtils.buildPopularMoviesUrl();
-                    makeMovieDbSearch(popularMoviesURL);
-                }
-
-                if( queryCallback == R.id.action_highest_rated ) {
-                    actionSelected = R.id.action_highest_rated;
-                    currentPageTitle.setText("Highest Rated");
-                    URL highestRatedURL = NetworkUtils.buildPopularMovieHighestRated();
-                    makeMovieDbSearch(highestRatedURL);
-                }
-
-                if (queryCallback == R.id.action_favorite_movies) {
-                    actionSelected = R.id.action_favorite_movies;
-                    currentPageTitle.setText("Favorite Movies");
-                    final LiveData<List<MovieDB>> favoriteMovies =
-                            mDb.movieDao().loadFavoriteMovies();
-                    favoriteMovies.observe(this, new Observer<List<MovieDB>>() {
-                        @Override
-                        public void onChanged(@Nullable List<MovieDB> movieDBS) {
-                            favoriteMovies.removeObserver(this);
-                            initializeMovieObject(movieDBS);
-                        }
-                    });
-                }
-            }
             if (savedInstanceState.containsKey(KEY_INSTANCE_STATE_RV_POSITION)) {
                 mLayoutManagerSavedState = savedInstanceState
                         .getParcelable(KEY_INSTANCE_STATE_RV_POSITION);
 
-                URL popularMoviesURL = NetworkUtils.buildPopularMoviesUrl();
-                makeMovieDbSearch(popularMoviesURL);
+                if (savedInstanceState.containsKey(SEARCH_URL_KEY)) {
+                    Integer queryCallback = savedInstanceState
+                            .getInt(SEARCH_URL_KEY);
+
+                    if( queryCallback == R.id.action_most_popular ){
+                        actionSelected = R.id.action_most_popular;
+                        currentPageTitle.setText(R.string.most_popular);
+                        URL popularMoviesURL = NetworkUtils.buildPopularMoviesUrl();
+                        makeMovieDbSearch(popularMoviesURL);
+                    }
+
+                    if( queryCallback == R.id.action_highest_rated ) {
+                        actionSelected = R.id.action_highest_rated;
+                        currentPageTitle.setText(R.string.highest_rated);
+                        URL highestRatedURL = NetworkUtils.buildPopularMovieHighestRated();
+                        makeMovieDbSearch(highestRatedURL);
+                    }
+
+                    if (queryCallback == R.id.action_favorite_movies) {
+                        actionSelected = R.id.action_favorite_movies;
+                        currentPageTitle.setText(R.string.favorite_movies);
+                        final LiveData<List<MovieDB>> favoriteMovies =
+                                mDb.movieDao().loadFavoriteMovies();
+                        favoriteMovies.observe(this, new Observer<List<MovieDB>>() {
+                            @Override
+                            public void onChanged(@Nullable List<MovieDB> movieDBS) {
+                                favoriteMovies.removeObserver(this);
+                                initializeMovieObject(movieDBS);
+                            }
+                        });
+                    }
+                }
 
                 if (mLayoutManagerSavedState != null){
-
                     mLayoutManager.onRestoreInstanceState(mLayoutManagerSavedState);
                 }
             }
 
         }else{
-            currentPageTitle.setText("Most Popular");
+            currentPageTitle.setText(R.string.most_popular);
             actionSelected = R.id.action_most_popular;
             URL popularMoviesURL = NetworkUtils.buildPopularMoviesUrl();
             makeMovieDbSearch(popularMoviesURL);
@@ -123,9 +120,7 @@ public class MainActivity extends AppCompatActivity {
                                     initializeMovieObject(movieDBList);
                                 }else{
                                     connectionError.setVisibility(View.VISIBLE);
-                                    connectionError.setText("Unable to load the movie list! \n" +
-                                            "Please connect to internet \n" +
-                                            "to get the movie list");
+                                    connectionError.setText(R.string.no_internet_connection);
 
                                 }
 
@@ -144,9 +139,7 @@ public class MainActivity extends AppCompatActivity {
     public void initializeMovieObject(List<MovieDB> movieDBList){
         if (movieDBList.size() == 0) {
             connectionError.setVisibility(View.VISIBLE);
-            connectionError.setText("You don't have favorite movies! \n" +
-                    "Tap the star button in movie details \n" +
-                    "to save yours ");
+            connectionError.setText(R.string.no_favorite_movies);
         }
         RecyclerView mMoviesList = findViewById(R.id.rv_movie_list);
 
@@ -179,24 +172,28 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         connectionError.setVisibility(View.GONE);
-        int menuItemThatWasSelected = item.getItemId();
-        actionSelected = menuItemThatWasSelected;
-        if( menuItemThatWasSelected == R.id.action_most_popular ){
-            currentPageTitle.setText("Most Popular");
+        actionSelected = item.getItemId();
+
+
+        if( actionSelected == R.id.action_most_popular ){
+            Log.d("MENU",   "MOST POPULAR");
+            currentPageTitle.setText(R.string.most_popular);
             URL popularMoviesURL = NetworkUtils.buildPopularMoviesUrl();
             makeMovieDbSearch(popularMoviesURL);
             return true;
         }
 
-        if( menuItemThatWasSelected == R.id.action_highest_rated ) {
-            currentPageTitle.setText("Highest Rated");
+        if( actionSelected == R.id.action_highest_rated ) {
+            Log.d("MENU",   "HIGHEST RATED");
+            currentPageTitle.setText(R.string.highest_rated);
             URL highestRatedURL = NetworkUtils.buildPopularMovieHighestRated();
             makeMovieDbSearch(highestRatedURL);
             return true;
         }
 
-        if (menuItemThatWasSelected == R.id.action_favorite_movies) {
-            currentPageTitle.setText("Favorite Movies");
+        if (actionSelected == R.id.action_favorite_movies) {
+            Log.d("MENU",   "FAVORITE MOVIES");
+            currentPageTitle.setText(R.string.favorite_movies);
             final LiveData<List<MovieDB>> favoriteMovies = mDb.movieDao().loadFavoriteMovies();
             favoriteMovies.observe(this, new Observer<List<MovieDB>>() {
                 @Override
