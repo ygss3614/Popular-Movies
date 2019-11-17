@@ -5,6 +5,7 @@ import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v7.app.AppCompatActivity;
@@ -32,9 +33,12 @@ public class MainActivity extends AppCompatActivity {
 
     private AppDatabase mDb;
     private static final String SEARCH_URL_KEY = "search_url";
+    private static final String KEY_INSTANCE_STATE_RV_POSITION = "state_rv_position";
     private int actionSelected;
     private TextView currentPageTitle;
     private TextView connectionError;
+    private GridLayoutManager mLayoutManager;
+    private Parcelable mLayoutManagerSavedState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,12 +46,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mDb = AppDatabase.getInstance(getApplicationContext());
+        mLayoutManager = new GridLayoutManager(MainActivity.this, 2);
 
         currentPageTitle = findViewById(R.id.current_page_tv);
         connectionError = findViewById(R.id.connection_error_tv);
         connectionError.setVisibility(View.GONE);
 
+
         if (savedInstanceState != null) {
+
+
             if (savedInstanceState.containsKey(SEARCH_URL_KEY)) {
                 Integer queryCallback = savedInstanceState
                         .getInt(SEARCH_URL_KEY);
@@ -80,6 +88,19 @@ public class MainActivity extends AppCompatActivity {
                     });
                 }
             }
+            if (savedInstanceState.containsKey(KEY_INSTANCE_STATE_RV_POSITION)) {
+                mLayoutManagerSavedState = savedInstanceState
+                        .getParcelable(KEY_INSTANCE_STATE_RV_POSITION);
+
+                URL popularMoviesURL = NetworkUtils.buildPopularMoviesUrl();
+                makeMovieDbSearch(popularMoviesURL);
+
+                if (mLayoutManagerSavedState != null){
+
+                    mLayoutManager.onRestoreInstanceState(mLayoutManagerSavedState);
+                }
+            }
+
         }else{
             currentPageTitle.setText("Most Popular");
             actionSelected = R.id.action_most_popular;
@@ -128,8 +149,8 @@ public class MainActivity extends AppCompatActivity {
                     "to save yours ");
         }
         RecyclerView mMoviesList = findViewById(R.id.rv_movie_list);
-        GridLayoutManager layoutManager = new GridLayoutManager(MainActivity.this, 2);
-        mMoviesList.setLayoutManager(layoutManager);
+
+        mMoviesList.setLayoutManager(mLayoutManager);
 
         MoviesAdapter mAdapter = new MoviesAdapter(movieDBList, new MoviesAdapter.OnItemClickListener() {
             @Override
@@ -194,6 +215,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(SEARCH_URL_KEY, actionSelected);
+        outState.putParcelable(KEY_INSTANCE_STATE_RV_POSITION, mLayoutManager.onSaveInstanceState());
     }
 
 }
